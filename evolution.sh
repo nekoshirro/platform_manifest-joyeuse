@@ -115,8 +115,12 @@ start_build_process() {
     # Clean up existing trees
     echo "Starting remove repositories..."
     rm -rf device/xiaomi/joyeuse
+    rm -rf device/xiaomi/sm6250-common
     rm -rf vendor/xiaomi/joyeuse
+    rm -rf vendor/xiaomi/sm6250-common
     rm -rf vendor/xiaomi/miuicamera-joyeuse
+    rm -rf vendor/xiaomi/camera
+    rm -rf device/xiaomi/camera
     rm -rf kernel/xiaomi/sm6250
     rm -rf out/target/product/joyeuse
     rm -rf vendor/*priv*
@@ -127,17 +131,20 @@ start_build_process() {
 
     echo "Cloning device stuff..."
     # Device Trees
-    git clone https://github.com/nekoshirro/platform_device_xiaomi_joyeuse.git device/xiaomi/joyeuse -b evox-q1 --depth 1
+    git clone https://github.com/AOSP-joyeuse/device_xiaomi_joyeuse.git device/xiaomi/joyeuse --depth 1
+    git clone https://github.com/AOSP-joyeuse/device_xiaomi_sm6250-common.git device/xiaomi/sm6250-common --depth 1
 
     # Vendor Trees
-    git clone https://github.com/nekoshirro/platform_vendor_xiaomi_joyeuse.git vendor/xiaomi/joyeuse --depth 1
+    git clone https://github.com/AOSP-joyeuse/vendor_xiaomi_joyeuse.git vendor/xiaomi/joyeuse --depth 1
+    git clone https://github.com/AOSP-joyeuse/vendor_xiaomi_sm6250-common.git vendor/xiaomi/sm6250-common --depth 1
 
     # Kernel & Toolchain
-    git clone https://github.com/LineageOS/android_kernel_xiaomi_sm6250.git kernel/xiaomi/sm6250 --depth 1
+    git clone https://github.com/AOSP-joyeuse/kernel_xiaomi_sm6250.git -b bka-sukisu kernel/xiaomi/sm6250 --depth 1
 #   git clone https://gitlab.com/nekoshirro/Alchemist-LLVM.git prebuilts/clang/host/linux-x86/clang-alchemist -b clang-21-LTO --depth 1
 
     # Camera/Hardware
-    git clone https://github.com/nekoshirro/platform_vendor_xiaomi_miuicamera-joyeuse.git vendor/xiaomi/miuicamera-joyeuse --depth 1
+    git clone https://github.com/AOSP-joyeuse/device_xiaomi_camera.git device/xiaomi/camera --depth 1
+    git clone https://github.com/AOSP-joyeuse/vendor_xiaomi_camera.git vendor/xiaomi/camera --depth 1
     git clone https://github.com/Evolution-X-Devices/hardware_xiaomi.git hardware/xiaomi --depth 1
     git clone https://github.com/LineageOS/android_hardware_sony_timekeep.git hardware/sony/timekeep --depth 1
 
@@ -204,7 +211,7 @@ start_build_process() {
        warning_message="$ksu_warning"
     elif [ "$current_branch" == "bka" ]; then
        warning_message="$non_ksu_warning"
-    elif [ "$current_branch" == "sukisu" ]; then
+    elif [ "$current_branch" == "bka-sukisu" ]; then
        warning_message="$sukisu_warning"
     else
        echo "Warning not sent because branch ($current_branch) is not 'ksu-next' or 'bka' 'sukisu'."
@@ -245,7 +252,7 @@ start_build_process() {
     version_output=$(echo "$version_output" | sed 's/_/\\_/g')
     version_message="*${TOOLCHAIN_NAME}*
     ${version_output}"
-    send_telegram "$TG_BUILD_CHAT_ID" "$version_message"
+ #   send_telegram "$TG_BUILD_CHAT_ID" "$version_message"
 
     # Conditional Upload ROM
     if [[ $BUILD_STATUS -eq 0 ]]; then
